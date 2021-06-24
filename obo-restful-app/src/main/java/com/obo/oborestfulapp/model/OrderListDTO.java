@@ -10,5 +10,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderListDTO {
+
+    private long totalItems;
     List<OrderDTO> orders;
+    private int totalPages;
+    private int currentPage;
 }

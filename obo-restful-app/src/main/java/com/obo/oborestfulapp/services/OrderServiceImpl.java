@@ -5,7 +5,10 @@ import com.obo.oborestfulapp.domain.Order;
 import com.obo.oborestfulapp.exceptions.ResourceNotFoundException;
 import com.obo.oborestfulapp.mapper.OrderMapper;
 import com.obo.oborestfulapp.model.OrderDTO;
+import com.obo.oborestfulapp.model.OrderListDTO;
 import com.obo.oborestfulapp.repositories.OrderRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,12 +25,27 @@ public class OrderServiceImpl implements OrderService {
         this.orderRepository = orderRepository;
     }
 
+//    @Override
+//    public List<OrderDTO> getAllOrders() {
+//        return orderRepository.findAll()
+//                .stream()
+//                .map(orderMapper::orderToOrderDTO)
+//                .collect(Collectors.toList());
+//    }
+
     @Override
-    public List<OrderDTO> getAllOrders() {
-        return orderRepository.findAll()
+    public OrderListDTO findAll(Pageable pageable) {
+        Page<Order> pages = orderRepository.findAll(pageable);
+        return pageToProductCategoryListDTO(pages);
+    }
+
+    private OrderListDTO pageToProductCategoryListDTO(Page<Order> pages) {
+        List<OrderDTO> categoriesDTOList = pages.getContent()
                 .stream()
                 .map(orderMapper::orderToOrderDTO)
                 .collect(Collectors.toList());
+        return new OrderListDTO(pages.getTotalElements(), categoriesDTOList,
+                pages.getTotalPages(), pages.getNumber());
     }
 
     @Override
@@ -40,19 +58,19 @@ public class OrderServiceImpl implements OrderService {
         return saveAndReturnDTO(orderMapper.orderDtoToOrder(orderDTO));
     }
 
-    private OrderDTO saveAndReturnDTO(Order order) {
-        Order savedOrder = orderRepository.save(order);
-        OrderDTO returnedDTO = orderMapper.orderToOrderDTO(savedOrder);
-        returnedDTO.setOrderUrl("/api/v1/order" + savedOrder.getTrackingNumber());
-        return returnedDTO;
-    }
-
     @Override
     public OrderDTO saveOrderByDTO(Long id, OrderDTO orderDTO) {
         Order order = orderMapper.orderDtoToOrder((orderDTO));
         order.setId(id);
 
         return saveAndReturnDTO(order);
+    }
+
+    private OrderDTO saveAndReturnDTO(Order order) {
+        Order savedOrder = orderRepository.save(order);
+        OrderDTO returnedDTO = orderMapper.orderToOrderDTO(savedOrder);
+        returnedDTO.setOrderUrl("/api/v1/order" + savedOrder.getTrackingNumber());
+        return returnedDTO;
     }
 
     @Override
@@ -82,5 +100,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void deleteOrder(Long id) {
         orderRepository.deleteById(id);
+    }
+
+    @Override
+    public OrderDTO getOrderById(Long id) {
+        return orderMapper.orderToOrderDTO(orderRepository.getById(id));
     }
 }
