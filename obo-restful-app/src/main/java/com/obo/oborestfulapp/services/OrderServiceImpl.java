@@ -66,6 +66,21 @@ public class OrderServiceImpl implements OrderService {
         return saveAndReturnDTO(order);
     }
 
+    @Override
+    public OrderDTO parchOrderByDTO(Long id, OrderDTO orderDTO) {
+        return orderRepository.findById(id).map(order -> {
+            if (orderDTO.getCarrier() != null) {
+                order.setCarrier(orderDTO.getCarrier());
+            }
+
+            if (orderDTO.getTrackingNumber() != null) {
+                order.setTrackingNumber(orderDTO.getTrackingNumber());
+            }
+
+            return orderMapper.orderToOrderDTO(orderRepository.save(order));
+        }).orElseThrow(RuntimeException::new);
+    }
+
     private OrderDTO saveAndReturnDTO(Order order) {
         Order savedOrder = orderRepository.save(order);
         OrderDTO returnedDTO = orderMapper.orderToOrderDTO(savedOrder);

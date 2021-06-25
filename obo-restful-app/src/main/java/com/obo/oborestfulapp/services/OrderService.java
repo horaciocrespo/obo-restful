@@ -12,6 +12,7 @@ public interface OrderService {
     OrderListDTO findAll(Pageable pageable);
     OrderDTO getOrderByTrackingNumber(String trackingNumber);
     OrderDTO createNewOrder(OrderDTO orderDTO);
+    OrderDTO parchOrderByDTO(Long id, OrderDTO orderDTO);
     OrderDTO saveOrderByDTO(Long id, OrderDTO orderDTO);
     OrderDTO patchOrder(Long id, OrderDTO orderDTO);
     void deleteOrder(Long id);
