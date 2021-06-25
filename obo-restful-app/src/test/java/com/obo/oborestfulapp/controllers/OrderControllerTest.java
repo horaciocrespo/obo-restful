@@ -23,6 +23,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -153,4 +154,11 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$.trackingNumber", equalTo("RA411342925US")));
     }
 
+    @Test
+    void deleteOrder() throws Exception {
+        mockMvc.perform(delete("/api/v1/orders/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        verify(orderService).deleteOrder(anyLong());
+    }
 }

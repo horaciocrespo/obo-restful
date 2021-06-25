@@ -75,8 +75,9 @@ public class OrderController {
         return new ResponseEntity<>(orderService.patchOrder(id, orderDTO), HttpStatus.OK);
     }
 
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<OrderDTO> deleteOrder(@PathVariable Long id) {
-//        return new ResponseEntity<OrderDTO>(orderService.deleteOrder(id), HttpStatus.OK);
-//    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
+        orderService.deleteOrder(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

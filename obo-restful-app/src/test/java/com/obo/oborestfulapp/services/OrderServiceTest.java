@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class OrderServiceTest {
@@ -85,5 +85,12 @@ public class OrderServiceTest {
 
         assertEquals(paramOrderDTO.getCarrier(), returnedDTO.getCarrier());
         assertEquals(paramOrderDTO.getTrackingNumber(), returnedDTO.getTrackingNumber());
+    }
+
+    @Test
+    void deleteOrderById() {
+        Long id = 1L;
+        orderRepository.deleteById(id);
+        verify(orderRepository, times(1)).deleteById(anyLong());
     }
 }
