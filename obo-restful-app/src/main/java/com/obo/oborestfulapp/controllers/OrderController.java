@@ -70,10 +70,10 @@ public class OrderController {
         return new ResponseEntity<>(orderService.saveOrderByDTO(id, orderDTO), HttpStatus.CREATED);
     }
 
-//    @PatchMapping("/{id}")
-//    public ResponseEntity<OrderDTO> patchOrder(@PathVariable Long id, @RequestBody OrderDTO orderDTO) {
-//        return new ResponseEntity<OrderDTO>(orderService.patchOrder(id, orderDTO), HttpStatus.OK);
-//    }
+    @PatchMapping("/{id}")
+    public ResponseEntity<OrderDTO> patchOrder(@PathVariable Long id, @RequestBody OrderDTO orderDTO) {
+        return new ResponseEntity<>(orderService.patchOrder(id, orderDTO), HttpStatus.OK);
+    }
 
 //    @DeleteMapping("/{id}")
 //    public ResponseEntity<OrderDTO> deleteOrder(@PathVariable Long id) {

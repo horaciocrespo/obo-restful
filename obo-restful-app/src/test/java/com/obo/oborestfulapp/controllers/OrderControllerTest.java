@@ -2,6 +2,7 @@ package com.obo.oborestfulapp.controllers;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.obo.oborestfulapp.domain.Order;
 import com.obo.oborestfulapp.model.OrderDTO;
 import com.obo.oborestfulapp.model.OrderListDTO;
 import com.obo.oborestfulapp.services.OrderService;
@@ -21,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -83,7 +85,6 @@ public class OrderControllerTest {
 
         OrderDTO returnedOrderDTO = new OrderDTO();
         returnedOrderDTO.setTrackingNumber(paramOrderDTO.getTrackingNumber());
-
         when(orderService.saveOrderByDTO(ArgumentMatchers.anyLong(), ArgumentMatchers.any(OrderDTO.class))).thenReturn(returnedOrderDTO);
 
         mockMvc.perform(put("/api/v1/orders/1")
@@ -99,6 +100,26 @@ public class OrderControllerTest {
         } catch (Exception e) {
             throw new RuntimeException();
         }
+    }
+
+    @Test
+    void testPatchOrder() throws Exception {
+        OrderDTO paramOrderDTO = new OrderDTO();
+        paramOrderDTO.setCarrier("USPS");
+        paramOrderDTO.setTrackingNumber("RA929808385US");
+
+        OrderDTO orderDTOFromDB = new OrderDTO();
+        orderDTOFromDB.setCarrier(paramOrderDTO.getCarrier());
+        orderDTOFromDB.setTrackingNumber(paramOrderDTO.getTrackingNumber());
+        when(orderService.patchOrder(ArgumentMatchers.anyLong(), ArgumentMatchers.any(OrderDTO.class))).thenReturn(orderDTOFromDB);
+
+        mockMvc.perform(patch("/api/v1/orders/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(paramOrderDTO))
+        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.trackingNumber", equalTo("RA929808385US")))
+            .andExpect(jsonPath("$.carrier", equalTo("USPS")));
     }
 
 //    @Test
