@@ -69,4 +69,21 @@ public class OrderServiceTest {
         // then
         assertEquals(paramOrderDTO.getTrackingNumber(), savedDTO.getTrackingNumber());
     }
+
+    @Test
+    void createOrder() {
+        OrderDTO paramOrderDTO = new OrderDTO();
+        paramOrderDTO.setCarrier("USPS");
+        paramOrderDTO.setTrackingNumber("RA411342925US");
+
+        Order orderFromDB = new Order();
+        orderFromDB.setCarrier("USPS");
+        orderFromDB.setTrackingNumber("RA411342925US");
+        when(orderRepository.save(ArgumentMatchers.any(Order.class))).thenReturn(orderFromDB);
+
+        OrderDTO returnedDTO = orderService.createNewOrder(paramOrderDTO);
+
+        assertEquals(paramOrderDTO.getCarrier(), returnedDTO.getCarrier());
+        assertEquals(paramOrderDTO.getTrackingNumber(), returnedDTO.getTrackingNumber());
+    }
 }

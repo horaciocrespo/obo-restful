@@ -59,11 +59,11 @@ public class OrderController {
 //    public ResponseEntity<OrderDTO> getOrderByTrackingNumber(@PathVariable String trackingNumber) {
 //        return new ResponseEntity<OrderDTO>(orderService.getOrderByTrackingNumber(trackingNumber), HttpStatus.OK);
 //    }
-//
-//    @PostMapping
-//    public ResponseEntity<OrderDTO> createNewOrder(@RequestBody OrderDTO orderDTO) {
-//        return new ResponseEntity<OrderDTO>(orderService.createNewOrder(orderDTO), HttpStatus.CREATED);
-//    }
+
+    @PostMapping
+    public ResponseEntity<OrderDTO> createNewOrder(@RequestBody OrderDTO orderDTO) {
+        return new ResponseEntity<>(orderService.createNewOrder(orderDTO), HttpStatus.CREATED);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<OrderDTO> updateOrder(@PathVariable Long id, @RequestBody OrderDTO orderDTO) {

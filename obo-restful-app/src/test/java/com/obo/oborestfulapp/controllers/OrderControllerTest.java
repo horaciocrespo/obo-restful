@@ -16,16 +16,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -115,26 +112,24 @@ public class OrderControllerTest {
 //                .andExpect(status().isOk());
 //    }
 
-//    @Test
-//    void createNewOrder() throws Exception {
-//        // given
-//        OrderDTO orderDTO = new OrderDTO();
-//        orderDTO.setTrackingNumber("123");
-//
-//        OrderDTO returnedDto = new OrderDTO();
-//        returnedDto.setTrackingNumber(orderDTO.getTrackingNumber());
-//        returnedDto.setOrderUrl("/api/v1/customers/1");
-//
-//        when(orderService.createNewOrder(orderDTO)).thenReturn(returnedDto);
-//
-//        mockMvc.perform(post("/api/v1/orders")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(asJsonString(orderDTO)))
-//                .andExpect(status().isCreated())
-//                .andExpect(jsonPath("$.tracking", equalTo("123")));
-//
-//    }
+    @Test
+    void createNewOrder() throws Exception {
+        // given
+        OrderDTO paramOrderDTO = new OrderDTO();
+        paramOrderDTO.setCarrier("USPS");
+        paramOrderDTO.setTrackingNumber("RA411342925US");
 
+        OrderDTO orderDTOFromDB = new OrderDTO();
+        orderDTOFromDB.setCarrier(paramOrderDTO.getCarrier());
+        orderDTOFromDB.setTrackingNumber(paramOrderDTO.getTrackingNumber());
+        orderDTOFromDB.setOrderUrl("/api/v1/customers/1");
+        when(orderService.createNewOrder(ArgumentMatchers.any(OrderDTO.class))).thenReturn(orderDTOFromDB);
 
+        mockMvc.perform(post("/api/v1/orders")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(paramOrderDTO)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.trackingNumber", equalTo("RA411342925US")));
+    }
 
 }
