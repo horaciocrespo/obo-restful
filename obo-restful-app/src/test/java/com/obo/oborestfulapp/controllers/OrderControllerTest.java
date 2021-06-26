@@ -2,7 +2,7 @@ package com.obo.oborestfulapp.controllers;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.obo.oborestfulapp.domain.Order;
+import com.obo.oborestfulapp.exceptions.ResourceNotFoundException;
 import com.obo.oborestfulapp.model.OrderDTO;
 import com.obo.oborestfulapp.model.OrderListDTO;
 import com.obo.oborestfulapp.services.OrderService;
@@ -123,16 +123,26 @@ public class OrderControllerTest {
             .andExpect(jsonPath("$.carrier", equalTo("USPS")));
     }
 
-//    @Test
-//    void getOrderById() throws Exception {
-//        OrderDTO orderDTO = new OrderDTO();
-//        orderDTO.setTrackingNumber("123");
-//
-//        when(orderService.getOrderById(1L)).thenReturn(orderDTO);
-//
-//        mockMvc.perform(get("api/v1/orders/").contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk());
-//    }
+    @Test
+    void getOrderById() throws Exception {
+        OrderDTO orderDTOFromDB = new OrderDTO();
+        orderDTOFromDB.setTrackingNumber("123");
+        when(orderService.getOrderById(ArgumentMatchers.anyLong())).thenReturn(orderDTOFromDB);
+
+        mockMvc.perform(get("/api/v1/orders/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(orderDTOFromDB)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetOrderByIdNotFound() throws Exception {
+        when(orderService.getOrderById(ArgumentMatchers.anyLong())).thenThrow(ResourceNotFoundException.class);
+
+        mockMvc.perform(get("/api/v1/orders/999")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
 
     @Test
     void createNewOrder() throws Exception {

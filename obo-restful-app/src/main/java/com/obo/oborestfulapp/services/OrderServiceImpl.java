@@ -104,6 +104,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDTO getOrderById(Long id) {
-        return orderMapper.orderToOrderDTO(orderRepository.getById(id));
+        return orderRepository.findById(id)
+                .map(orderMapper::orderToOrderDTO)
+                .map(orderDTO -> {
+                    return orderDTO;
+                })
+                .orElseThrow(ResourceNotFoundException::new);
     }
 }
