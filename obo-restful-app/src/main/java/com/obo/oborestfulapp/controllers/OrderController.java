@@ -1,58 +1,85 @@
 package com.obo.oborestfulapp.controllers;
 
+import com.obo.oborestfulapp.domain.Order;
 import com.obo.oborestfulapp.model.OrderDTO;
-import com.obo.oborestfulapp.model.OrderListDTO;
+import com.obo.oborestfulapp.model.OrderDTOAssemblerSupport;
 import com.obo.oborestfulapp.services.OrderService;
-import org.springframework.data.domain.PageRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Controller
 // We could also read this from a properties file
 @RequestMapping(OrderController.BASE_URL)
+@RequiredArgsConstructor
 public class OrderController {
 
     public static final String BASE_URL = "/api/v1/orders";
 
     private final OrderService orderService;
 
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
-    }
+    // DEVNOTE this is needed for pagination
+    private final PagedResourcesAssembler<Order> pagedResourcesAssembler;
+    private final OrderDTOAssemblerSupport orderDTOAssemblerSupport;
 
+    // DEVNOTE http://localhost:8080/api/v1/orders?page=1&size=2&sort=title,desc
     @GetMapping
-    public ResponseEntity<OrderListDTO> getAllOrders(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size,
-            @RequestParam(defaultValue = "id,desc") String[] sort) {
+    public ResponseEntity<PagedModel<OrderDTO>> getAll(Pageable pageable) {
+        Page<Order> orderPage = orderService.findAllWithPagination(pageable);
+        PagedModel<OrderDTO> collModel = pagedResourcesAssembler
+                // Page<T>, RepresentationModelAssembler<T, R>
+                .toModel(orderPage, orderDTOAssemblerSupport);
 
-        List<Sort.Order> sortOrders = new ArrayList<>();
-
-        if (sort[0].contains(",")) {
-            for (String sortOrder : sort) {
-                String[] _sort = sortOrder.split(",");
-                sortOrders.add(new Sort.Order(Sort.Direction.fromString(_sort[1]), _sort[0]));
-            }
-        } else {
-            // sort=[field, direction]
-            sortOrders.add(new Sort.Order(Sort.Direction.fromString(sort[1]), sort[0]));
-        }
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortOrders));
-        OrderListDTO orderListDTO = orderService.findAll(pageable);
-        return new ResponseEntity<>(orderListDTO, HttpStatus.OK);
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(collModel);
     }
+
+//    @GetMapping
+//    public ResponseEntity<OrderListDTO> getAllOrders(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "3") int size,
+//            @RequestParam(defaultValue = "id,desc") String[] sort) {
+//
+//        List<Sort.Order> sortOrders = new ArrayList<>();
+//
+//        if (sort[0].contains(",")) {
+//            for (String sortOrder : sort) {
+//                String[] _sort = sortOrder.split(",");
+//                sortOrders.add(new Sort.Order(Sort.Direction.fromString(_sort[1]), _sort[0]));
+//            }
+//        } else {
+//            // sort=[field, direction]
+//            sortOrders.add(new Sort.Order(Sort.Direction.fromString(sort[1]), sort[0]));
+//        }
+//
+//        Pageable pageable = PageRequest.of(page, size, Sort.by(sortOrders));
+//        OrderListDTO orderListDTO = orderService.findAll(pageable);
+//        return new ResponseEntity<>(orderListDTO, HttpStatus.OK);
+//    }
 
     @GetMapping("{id}")
-    public ResponseEntity<OrderDTO> getOrderById(@PathVariable Long id) {
-        return new ResponseEntity<OrderDTO>(orderService.getOrderById(id), HttpStatus.OK);
+    public ResponseEntity<EntityModel<OrderDTO>> getOrderById(@PathVariable Long id) {
+
+//        return new ResponseEntity<>(EntityModel.of(orderService.getOrderById(id),
+//                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(OrderController.class).getOrderById(id)),
+//                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(OrderController.class).getAllOrders()).withRel("orders")
+//        ), HttpStatus.OK);
+
+        // https://spring.io/guides/tutorials/rest/
+        return new ResponseEntity<>(EntityModel.of(orderService.getOrderById(id),
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(OrderController.class).getOrderById(id)).withSelfRel()),
+                HttpStatus.OK);
     }
 
 //    @GetMapping("{trackingNumber}")
