@@ -39,6 +39,11 @@ public class OrderServiceImpl implements OrderService {
         return pageToProductCategoryListDTO(pages);
     }
 
+    @Override
+    public Page<Order> findAllWithPagination(Pageable pageable) {
+        return orderRepository.findAll(pageable);
+    }
+
     private OrderListDTO pageToProductCategoryListDTO(Page<Order> pages) {
         List<OrderDTO> categoriesDTOList = pages.getContent()
                 .stream()
@@ -69,7 +74,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderDTO saveAndReturnDTO(Order order) {
         Order savedOrder = orderRepository.save(order);
         OrderDTO returnedDTO = orderMapper.orderToOrderDTO(savedOrder);
-        returnedDTO.setOrderUrl("/api/v1/order" + savedOrder.getTrackingNumber());
+//        returnedDTO.setOrderUrl("/api/v1/order" + savedOrder.getTrackingNumber());
         return returnedDTO;
     }
 
@@ -86,7 +91,7 @@ public class OrderServiceImpl implements OrderService {
                     }
 
                     OrderDTO returnDTO = orderMapper.orderToOrderDTO(orderRepository.save(order));
-                    returnDTO.setOrderUrl(getOrderUrl(id));
+//                    returnDTO.setOrderUrl(getOrderUrl(id));
 
                     return returnDTO;
                 })

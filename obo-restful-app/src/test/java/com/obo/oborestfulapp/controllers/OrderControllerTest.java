@@ -154,7 +154,6 @@ public class OrderControllerTest {
         OrderDTO orderDTOFromDB = new OrderDTO();
         orderDTOFromDB.setCarrier(paramOrderDTO.getCarrier());
         orderDTOFromDB.setTrackingNumber(paramOrderDTO.getTrackingNumber());
-        orderDTOFromDB.setOrderUrl("/api/v1/customers/1");
         when(orderService.createNewOrder(ArgumentMatchers.any(OrderDTO.class))).thenReturn(orderDTOFromDB);
 
         mockMvc.perform(post("/api/v1/orders")
