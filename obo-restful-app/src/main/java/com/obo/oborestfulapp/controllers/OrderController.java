@@ -69,17 +69,25 @@ public class OrderController {
 //    }
 
     @GetMapping("{id}")
-    public ResponseEntity<EntityModel<OrderDTO>> getOrderById(@PathVariable Long id) {
+    public ResponseEntity<OrderDTO> getOrderById(@PathVariable Long id) {
 
 //        return new ResponseEntity<>(EntityModel.of(orderService.getOrderById(id),
 //                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(OrderController.class).getOrderById(id)),
 //                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(OrderController.class).getAllOrders()).withRel("orders")
 //        ), HttpStatus.OK);
 
+        Order order = orderService.getOrderById(id);
+
         // https://spring.io/guides/tutorials/rest/
-        return new ResponseEntity<>(EntityModel.of(orderService.getOrderById(id),
-                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(OrderController.class).getOrderById(id)).withSelfRel()),
-                HttpStatus.OK);
+//        return new ResponseEntity<>(EntityModel.of(orderService.getOrderById(id),
+//                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(OrderController.class).getOrderById(id)).withSelfRel()),
+//                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(OrderController.class).getAll(null)).withRel("orders"),
+//                HttpStatus.OK);
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(orderDTOAssemblerSupport.toModel(order));
     }
 
 //    @GetMapping("{trackingNumber}")

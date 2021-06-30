@@ -5,6 +5,7 @@ import com.obo.oborestfulapp.domain.Order;
 import com.obo.oborestfulapp.mapper.OrderMapper;
 import org.mapstruct.factory.Mappers;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
 
 // RepresentationModelAssemblerSupport
@@ -19,9 +20,18 @@ public class OrderDTOAssemblerSupport extends RepresentationModelAssemblerSuppor
 
     @Override
     public OrderDTO toModel(Order order) {
-        OrderDTO orderDTO = createModelWithId(order.getId(), order);
 
+        OrderDTO orderDTO = createModelWithId(order.getId(), order);
         OrderDTO resultOrderDTO = orderMapper.orderToOrderDTO(order);
+
+        orderDTO.add(WebMvcLinkBuilder.linkTo(
+                WebMvcLinkBuilder
+                        .methodOn(OrderController.class)
+                        .getAll(null)
+                )
+                .withRel("orders")
+        );
+
         resultOrderDTO.add(orderDTO.getLinks());
 
         return resultOrderDTO;

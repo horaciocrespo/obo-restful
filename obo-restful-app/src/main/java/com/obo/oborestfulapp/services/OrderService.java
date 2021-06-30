@@ -19,5 +19,5 @@ public interface OrderService {
     OrderDTO patchOrder(Long id, OrderDTO orderDTO);
     OrderDTO saveOrderByDTO(Long id, OrderDTO orderDTO);
     void deleteOrder(Long id);
-    OrderDTO getOrderById(Long id);
+    Order getOrderById(Long id);
 }
