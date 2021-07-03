@@ -1,6 +1,7 @@
 package com.obo.oborestfulapp.controllers;
 
 import com.obo.oborestfulapp.domain.Order;
+import com.obo.oborestfulapp.domain.OrderStatus;
 import com.obo.oborestfulapp.model.OrderDTO;
 import com.obo.oborestfulapp.model.OrderDTOAssemblerSupport;
 import com.obo.oborestfulapp.services.OrderService;
@@ -9,8 +10,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.mediatype.problem.Problem;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -97,12 +102,31 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<OrderDTO> createNewOrder(@RequestBody OrderDTO orderDTO) {
-        return new ResponseEntity<>(orderService.createNewOrder(orderDTO), HttpStatus.CREATED);
+
+        Order order = orderService.createNewOrder(orderDTO);
+
+        OrderDTO savedOrderDTO = orderDTOAssemblerSupport.toModel(order);
+
+        return ResponseEntity
+                .created(savedOrderDTO.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(savedOrderDTO);
+
+
+//        return new ResponseEntity<>(orderService.createNewOrder(orderDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<OrderDTO> updateOrder(@PathVariable Long id, @RequestBody OrderDTO orderDTO) {
-        return new ResponseEntity<>(orderService.saveOrderByDTO(id, orderDTO), HttpStatus.CREATED);
+        Order order = orderService.updateOrderByDTO(id, orderDTO);
+        OrderDTO savedOrderDTO = orderDTOAssemblerSupport.toModel(order);
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON)
+//                .created(savedOrderDTO.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(savedOrderDTO);
+
+//        return new ResponseEntity<>(orderService.saveOrderByDTO(id, orderDTO), HttpStatus.CREATED);
     }
 
     @PatchMapping("/{id}")
@@ -114,5 +138,43 @@ public class OrderController {
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
         orderService.deleteOrder(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<?> cancel(@PathVariable Long id) {
+        Order order = orderService.getOrderById(id);
+        if (order.getStatus() == OrderStatus.IN_PROGRESS) {
+            order.setStatus(OrderStatus.CANCELLED);
+            OrderDTO orderDTO = orderDTOAssemblerSupport.toModel(order);
+            Order savedOrder = orderService.saveOrderByDTO(id, orderDTO);
+            return ResponseEntity.ok(orderDTOAssemblerSupport.toModel(savedOrder));
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.METHOD_NOT_ALLOWED)
+                .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
+                .body(Problem.create()
+                        .withTitle("Method not allowed")
+                        .withDetail("You can't cancel an order that is in the " + order.getStatus() + " status")
+                );
+    }
+
+    @PutMapping("/{id}/complete")
+    public ResponseEntity<?> complete(@PathVariable Long id) {
+        Order order = orderService.getOrderById(id);
+        if (order.getStatus() == OrderStatus.IN_PROGRESS) {
+            order.setStatus(OrderStatus.COMPLETED);
+            OrderDTO orderDTO = orderDTOAssemblerSupport.toModel(order);
+            Order savedOrder = orderService.saveOrderByDTO(id, orderDTO);
+            return ResponseEntity.ok(orderDTOAssemblerSupport.toModel(savedOrder));
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.METHOD_NOT_ALLOWED)
+                .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
+                .body(Problem.create()
+                        .withTitle("Method not allowed")
+                        .withDetail("You can't cancel an order that is in the " + order.getStatus() + " status")
+                );
     }
 }

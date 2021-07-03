@@ -2,6 +2,7 @@ package com.obo.oborestfulapp.services;
 
 import com.obo.oborestfulapp.controllers.OrderController;
 import com.obo.oborestfulapp.domain.Order;
+import com.obo.oborestfulapp.domain.OrderStatus;
 import com.obo.oborestfulapp.exceptions.ResourceNotFoundException;
 import com.obo.oborestfulapp.mapper.OrderMapper;
 import com.obo.oborestfulapp.model.OrderDTO;
@@ -59,16 +60,33 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderDTO createNewOrder(OrderDTO orderDTO) {
-        return saveAndReturnDTO(orderMapper.orderDtoToOrder(orderDTO));
+    public Order createNewOrder(OrderDTO orderDTO) {
+        Order newOrder = orderMapper.orderDtoToOrder(orderDTO);
+        newOrder.setStatus(OrderStatus.DRAFT);
+        return orderRepository.save(newOrder);
+//        return saveAndReturnDTO(orderMapper.orderDtoToOrder(orderDTO));
     }
 
     @Override
-    public OrderDTO saveOrderByDTO(Long id, OrderDTO orderDTO) {
+    public Order saveOrderByDTO(Long id, OrderDTO orderDTO) {
         Order order = orderMapper.orderDtoToOrder((orderDTO));
         order.setId(id);
+        return orderRepository.save(order);
 
-        return saveAndReturnDTO(order);
+//        return saveAndReturnDTO(order);
+    }
+
+    @Override
+    public Order updateOrderByDTO(Long id, OrderDTO orderDTO) {
+
+        return orderRepository
+                .findById(id)
+                .map(order -> {
+                    Order updatedOrder = orderMapper.orderDtoToOrder(orderDTO);
+                    updatedOrder.setId(id);
+                    return orderRepository.save(updatedOrder);
+                })
+                .orElseThrow(ResourceNotFoundException::new);
     }
 
     private OrderDTO saveAndReturnDTO(Order order) {
@@ -120,4 +138,6 @@ public class OrderServiceImpl implements OrderService {
                 .findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
     }
+
+
 }

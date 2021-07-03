@@ -13,7 +13,18 @@ import org.springframework.hateoas.RepresentationModel;
 public class OrderDTO extends RepresentationModel<OrderDTO> {
 
     private Long id;
-    private String Carrier;
+    private String orderNumber;
+    private String customerName;
+    private String submitDate;
+    private String orderStatus;
+    private String shippingAddress;
+    private String billingAddress;
+
+    private String storeName;
+
+    private String carrier;
     private String trackingNumber;
+
+    private String details;
 
 }

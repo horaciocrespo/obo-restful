@@ -10,8 +10,9 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String Carrier;
+    private String carrier;
     private String trackingNumber;
+    private OrderStatus orderStatus;
 
     // --- Relationships ---
 
@@ -32,11 +33,11 @@ public class Order {
     }
 
     public String getCarrier() {
-        return Carrier;
+        return carrier;
     }
 
     public void setCarrier(String carrier) {
-        Carrier = carrier;
+        carrier = carrier;
     }
 
     public String getTrackingNumber() {
@@ -61,5 +62,13 @@ public class Order {
 
     public void setComments(Set<Comment> comments) {
         this.comments = comments;
+    }
+
+    public OrderStatus getStatus() {
+        return orderStatus;
+    }
+
+    public void setStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
     }
 }
