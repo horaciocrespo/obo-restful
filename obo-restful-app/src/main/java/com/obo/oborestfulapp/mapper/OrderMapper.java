@@ -1,6 +1,7 @@
 package com.obo.oborestfulapp.mapper;
 
 import com.obo.oborestfulapp.domain.Order;
+import com.obo.oborestfulapp.model.CreateOrderDTO;
 import com.obo.oborestfulapp.model.OrderDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -12,4 +13,5 @@ public interface OrderMapper {
 
     OrderDTO orderToOrderDTO(Order order);
     Order orderDtoToOrder(OrderDTO orderDTO);
+    Order createOrderDtoToOrder(CreateOrderDTO orderDTO);
 }

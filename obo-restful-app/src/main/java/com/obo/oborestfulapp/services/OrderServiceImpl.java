@@ -5,6 +5,7 @@ import com.obo.oborestfulapp.domain.Order;
 import com.obo.oborestfulapp.domain.OrderStatus;
 import com.obo.oborestfulapp.exceptions.ResourceNotFoundException;
 import com.obo.oborestfulapp.mapper.OrderMapper;
+import com.obo.oborestfulapp.model.CreateOrderDTO;
 import com.obo.oborestfulapp.model.OrderDTO;
 import com.obo.oborestfulapp.model.OrderListDTO;
 import com.obo.oborestfulapp.repositories.OrderRepository;
@@ -60,9 +61,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order createNewOrder(OrderDTO orderDTO) {
-        Order newOrder = orderMapper.orderDtoToOrder(orderDTO);
-        newOrder.setStatus(OrderStatus.DRAFT);
+    public Order createNewOrder(CreateOrderDTO orderDTO) {
+        Order newOrder = orderMapper.createOrderDtoToOrder(orderDTO);
+        newOrder.setOrderStatus(OrderStatus.DRAFT);
         return orderRepository.save(newOrder);
 //        return saveAndReturnDTO(orderMapper.orderDtoToOrder(orderDTO));
     }
@@ -77,12 +78,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order updateOrderByDTO(Long id, OrderDTO orderDTO) {
+    public Order updateOrderByDTO(Long id, CreateOrderDTO orderDTO) {
 
         return orderRepository
                 .findById(id)
                 .map(order -> {
-                    Order updatedOrder = orderMapper.orderDtoToOrder(orderDTO);
+                    Order updatedOrder = orderMapper.createOrderDtoToOrder(orderDTO);
                     updatedOrder.setId(id);
                     return orderRepository.save(updatedOrder);
                 })
@@ -97,16 +98,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderDTO patchOrder(Long id, OrderDTO orderDTO) {
+    public OrderDTO patchOrder(Long id, CreateOrderDTO orderDTO) {
         return orderRepository.findById(id)
                 .map(order -> {
-                    if (orderDTO.getTrackingNumber() != null) {
-                        order.setTrackingNumber(orderDTO.getTrackingNumber());
-                    }
+//                    if (orderDTO.getTrackingNumber() != null) {
+//                        order.setTrackingNumber(orderDTO.getTrackingNumber());
+//                    }
 
-                    if (orderDTO.getCarrier() != null) {
-                        order.setCarrier(orderDTO.getCarrier());
-                    }
+//                    if (orderDTO.getCarrier() != null) {
+//                        order.setCarrier(orderDTO.getCarrier());
+//                    }
 
                     OrderDTO returnDTO = orderMapper.orderToOrderDTO(orderRepository.save(order));
 //                    returnDTO.setOrderUrl(getOrderUrl(id));

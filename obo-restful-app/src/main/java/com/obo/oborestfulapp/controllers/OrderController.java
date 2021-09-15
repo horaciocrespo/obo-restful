@@ -2,6 +2,7 @@ package com.obo.oborestfulapp.controllers;
 
 import com.obo.oborestfulapp.domain.Order;
 import com.obo.oborestfulapp.domain.OrderStatus;
+import com.obo.oborestfulapp.model.CreateOrderDTO;
 import com.obo.oborestfulapp.model.OrderDTO;
 import com.obo.oborestfulapp.model.OrderDTOAssemblerSupport;
 import com.obo.oborestfulapp.services.OrderService;
@@ -20,7 +21,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @Controller
 // We could also read this from a properties file
@@ -101,22 +105,17 @@ public class OrderController {
 //    }
 
     @PostMapping
-    public ResponseEntity<OrderDTO> createNewOrder(@RequestBody OrderDTO orderDTO) {
-
+    public ResponseEntity<OrderDTO> createNewOrder(@RequestBody @Valid CreateOrderDTO orderDTO) {
         Order order = orderService.createNewOrder(orderDTO);
-
         OrderDTO savedOrderDTO = orderDTOAssemblerSupport.toModel(order);
-
         return ResponseEntity
                 .created(savedOrderDTO.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(savedOrderDTO);
-
-
 //        return new ResponseEntity<>(orderService.createNewOrder(orderDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<OrderDTO> updateOrder(@PathVariable Long id, @RequestBody OrderDTO orderDTO) {
+    public ResponseEntity<OrderDTO> updateOrder(@PathVariable Long id, @RequestBody @Valid CreateOrderDTO orderDTO) {
         Order order = orderService.updateOrderByDTO(id, orderDTO);
         OrderDTO savedOrderDTO = orderDTOAssemblerSupport.toModel(order);
 
@@ -129,10 +128,11 @@ public class OrderController {
 //        return new ResponseEntity<>(orderService.saveOrderByDTO(id, orderDTO), HttpStatus.CREATED);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<OrderDTO> patchOrder(@PathVariable Long id, @RequestBody OrderDTO orderDTO) {
-        return new ResponseEntity<>(orderService.patchOrder(id, orderDTO), HttpStatus.OK);
-    }
+    // TODO to be implemented
+//    @PatchMapping("/{id}")
+//    public ResponseEntity<OrderDTO> patchOrder(@PathVariable Long id, @RequestBody @Valid CreateOrderDTO orderDTO) {
+//        return new ResponseEntity<>(orderService.patchOrder(id, orderDTO), HttpStatus.OK);
+//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
@@ -140,41 +140,49 @@ public class OrderController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/{id}/cancel")
-    public ResponseEntity<?> cancel(@PathVariable Long id) {
-        Order order = orderService.getOrderById(id);
-        if (order.getStatus() == OrderStatus.IN_PROGRESS) {
-            order.setStatus(OrderStatus.CANCELLED);
-            OrderDTO orderDTO = orderDTOAssemblerSupport.toModel(order);
-            Order savedOrder = orderService.saveOrderByDTO(id, orderDTO);
-            return ResponseEntity.ok(orderDTOAssemblerSupport.toModel(savedOrder));
-        }
+    // Update Status
 
-        return ResponseEntity
-                .status(HttpStatus.METHOD_NOT_ALLOWED)
-                .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
-                .body(Problem.create()
-                        .withTitle("Method not allowed")
-                        .withDetail("You can't cancel an order that is in the " + order.getStatus() + " status")
-                );
-    }
+    // TODO needs revision
+//    @PutMapping("/{id}/cancel")
+//    public ResponseEntity<?> cancel(@PathVariable Long id) {
+//        Order order = orderService.getOrderById(id);
+//
+//        if (order.getOrderStatus() == OrderStatus.IN_PROGRESS) {
+//            order.setOrderStatus(OrderStatus.CANCELLED);
+//
+//            // DEVNOTE this is dumb
+//            OrderDTO orderDTO = orderDTOAssemblerSupport.toModel(order);
+//            Order savedOrder = orderService.saveOrderByDTO(id, orderDTO);
+//
+//            return ResponseEntity.ok(orderDTOAssemblerSupport.toModel(savedOrder));
+//        }
+//
+//        return ResponseEntity
+//                .status(HttpStatus.METHOD_NOT_ALLOWED)
+//                .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
+//                .body(Problem.create()
+//                        .withTitle("Method not allowed")
+//                        .withDetail("You can't cancel an order that is in the " + order.getOrderStatus() + " status")
+//                );
+//    }
 
-    @PutMapping("/{id}/complete")
-    public ResponseEntity<?> complete(@PathVariable Long id) {
-        Order order = orderService.getOrderById(id);
-        if (order.getStatus() == OrderStatus.IN_PROGRESS) {
-            order.setStatus(OrderStatus.COMPLETED);
-            OrderDTO orderDTO = orderDTOAssemblerSupport.toModel(order);
-            Order savedOrder = orderService.saveOrderByDTO(id, orderDTO);
-            return ResponseEntity.ok(orderDTOAssemblerSupport.toModel(savedOrder));
-        }
-
-        return ResponseEntity
-                .status(HttpStatus.METHOD_NOT_ALLOWED)
-                .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
-                .body(Problem.create()
-                        .withTitle("Method not allowed")
-                        .withDetail("You can't cancel an order that is in the " + order.getStatus() + " status")
-                );
-    }
+    // TODO needs revision
+//    @PutMapping("/{id}/complete")
+//    public ResponseEntity<?> complete(@PathVariable Long id) {
+//        Order order = orderService.getOrderById(id);
+//        if (order.getOrderStatus() == OrderStatus.IN_PROGRESS) {
+//            order.setOrderStatus(OrderStatus.COMPLETED);
+//            OrderDTO orderDTO = orderDTOAssemblerSupport.toModel(order);
+//            Order savedOrder = orderService.saveOrderByDTO(id, orderDTO);
+//            return ResponseEntity.ok(orderDTOAssemblerSupport.toModel(savedOrder));
+//        }
+//
+//        return ResponseEntity
+//                .status(HttpStatus.METHOD_NOT_ALLOWED)
+//                .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
+//                .body(Problem.create()
+//                        .withTitle("Method not allowed")
+//                        .withDetail("You can't cancel an order that is in the " + order.getOrderStatus() + " status")
+//                );
+//    }
 }

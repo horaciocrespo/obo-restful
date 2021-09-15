@@ -25,7 +25,7 @@ public class OrderDTOAssemblerSupport extends RepresentationModelAssemblerSuppor
         OrderDTO orderDTO = createModelWithId(order.getId(), order);
         OrderDTO resultOrderDTO = orderMapper.orderToOrderDTO(order);
 
-        if (OrderStatus.IN_PROGRESS == order.getStatus()) {
+        if (OrderStatus.IN_PROGRESS == order.getOrderStatus()) {
             orderDTO.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(OrderController.class)
                     .cancel(order.getId())).withRel("cancel")
             );
@@ -47,4 +47,6 @@ public class OrderDTOAssemblerSupport extends RepresentationModelAssemblerSuppor
 
         return resultOrderDTO;
     }
+
+
 }
