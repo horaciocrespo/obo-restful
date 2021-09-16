@@ -20,8 +20,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class RestResponseEntityException extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Object> handleNotFoundException(Exception ex, WebRequest request) {
-        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Resource not found", ex);
+    public ResponseEntity<Object> handleNotFoundException(Exception ex) {
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND);
+        apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }
 

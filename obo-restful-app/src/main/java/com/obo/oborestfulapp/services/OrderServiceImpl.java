@@ -87,7 +87,7 @@ public class OrderServiceImpl implements OrderService {
                     updatedOrder.setId(id);
                     return orderRepository.save(updatedOrder);
                 })
-                .orElseThrow(ResourceNotFoundException::new);
+                .orElseThrow(() -> new ResourceNotFoundException(Order.class, "id", String.valueOf(id)));
     }
 
     private OrderDTO saveAndReturnDTO(Order order) {
@@ -114,7 +114,7 @@ public class OrderServiceImpl implements OrderService {
 
                     return returnDTO;
                 })
-                .orElseThrow(ResourceNotFoundException::new);
+                .orElseThrow(() -> new ResourceNotFoundException(Order.class, "id", String.valueOf(id)));
     }
 
     private String getOrderUrl(Long id) {
@@ -137,7 +137,7 @@ public class OrderServiceImpl implements OrderService {
 
         return orderRepository
                 .findById(id)
-                .orElseThrow(ResourceNotFoundException::new);
+                .orElseThrow(() -> new ResourceNotFoundException(Order.class, "id", String.valueOf(id)));
     }
 
 
