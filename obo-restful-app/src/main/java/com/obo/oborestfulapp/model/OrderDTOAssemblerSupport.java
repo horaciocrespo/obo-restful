@@ -27,11 +27,15 @@ public class OrderDTOAssemblerSupport extends RepresentationModelAssemblerSuppor
 
         if (OrderStatus.IN_PROGRESS == order.getOrderStatus()) {
             orderDTO.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(OrderController.class)
-                    .cancel(order.getId())).withRel("cancel")
+//                    .cancel(order.getId())
+                    )
+                    .withRel("cancel")
             );
 
             orderDTO.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(OrderController.class)
-                    .complete(order.getId())).withRel("complete")
+//                    .complete(order.getId())
+                    )
+                    .withRel("complete")
             );
         }
 

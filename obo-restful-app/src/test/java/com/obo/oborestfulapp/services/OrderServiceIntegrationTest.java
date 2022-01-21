@@ -29,24 +29,24 @@ public class OrderServiceIntegrationTest {
         orderService = new OrderServiceImpl(OrderMapper.INSTANCE, orderRepository);
     }
 
-    @Test
-    void patchCustomerUpdateTrackingNumber() {
-        long id = getOrderId();
-        Order orderFromDB = orderRepository.getById(id);
-        Assertions.assertNotNull(orderFromDB);
-//        String originalTrackingNo = orderFromDB.getTrackingNumber();
-
-        String newTrackingNo = "RA053932896US";
-        OrderDTO paramOrderDTO = new OrderDTO();
-        paramOrderDTO.setTrackingNumber(newTrackingNo);
-
-        orderService.patchOrder(id, paramOrderDTO);
-
-        Order updatedOrderFromDB = orderRepository.findById(id).get();
-
-        Assertions.assertNotNull(updatedOrderFromDB);
-        Assertions.assertEquals(newTrackingNo, updatedOrderFromDB.getTrackingNumber());
-    }
+//    @Test
+//    void patchCustomerUpdateTrackingNumber() {
+//        long id = getOrderId();
+//        Order orderFromDB = orderRepository.getById(id);
+//        Assertions.assertNotNull(orderFromDB);
+////        String originalTrackingNo = orderFromDB.getTrackingNumber();
+//
+//        String newTrackingNo = "RA053932896US";
+//        OrderDTO paramOrderDTO = new OrderDTO();
+//        paramOrderDTO.setTrackingNumber(newTrackingNo);
+//
+//        orderService.patchOrder(id, paramOrderDTO);
+//
+//        Order updatedOrderFromDB = orderRepository.findById(id).get();
+//
+//        Assertions.assertNotNull(updatedOrderFromDB);
+//        Assertions.assertEquals(newTrackingNo, updatedOrderFromDB.getTrackingNumber());
+//    }
 
     private long getOrderId() {
         List<Order> orders = orderRepository.findAll();

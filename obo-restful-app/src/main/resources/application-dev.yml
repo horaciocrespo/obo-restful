@@ -1,0 +1,42 @@
+# 1. Uses in-memory DB
+# 2. Generates schema automatically
+# 3. Database is populated from bootstrap file
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    # http://localhost:8080/h2-console
+    username: sa
+    password: password
+    # Not necessary
+    # driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      # this should be set to none if we're using schema.sql
+      ddl-auto: create-drop
+      # Not necessary
+#    database-platform: org.hibernate.dialect.H2Dialect
+    # Activating logging with Spring Data JPA
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+#    generate-ddl:
+  h2:
+    console:
+      enabled: true
+  sql:
+    init:
+      # this is useful for schema-${platform}.sql and data-${platform}.sql
+      platform: h2
+#debug: true
+
+# Activating logging with hibernate
+logging:
+  level:
+    org:
+      hibernate:
+        #        SQL: debug
+        # This logs values too
+        type: trace

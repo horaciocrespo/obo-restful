@@ -2,6 +2,7 @@ package com.obo.oborestfulapp.services;
 
 import com.obo.oborestfulapp.domain.Order;
 import com.obo.oborestfulapp.mapper.OrderMapper;
+import com.obo.oborestfulapp.model.CreateOrderDTO;
 import com.obo.oborestfulapp.model.OrderDTO;
 import com.obo.oborestfulapp.model.OrderListDTO;
 import com.obo.oborestfulapp.repositories.OrderRepository;
@@ -64,27 +65,41 @@ public class OrderServiceTest {
         when(orderRepository.save(ArgumentMatchers.any(Order.class))).thenReturn(orderFromDB);
 
         // when
-        OrderDTO savedDTO = orderService.saveOrderByDTO(1L, paramOrderDTO);
+        Order savedOrder = orderService.saveOrderByDTO(1L, paramOrderDTO);
 
         // then
-        assertEquals(paramOrderDTO.getTrackingNumber(), savedDTO.getTrackingNumber());
+        assertEquals(paramOrderDTO.getTrackingNumber(), savedOrder.getTrackingNumber());
     }
 
     @Test
     void createOrder() {
-        OrderDTO paramOrderDTO = new OrderDTO();
-        paramOrderDTO.setCarrier("USPS");
-        paramOrderDTO.setTrackingNumber("RA411342925US");
+        CreateOrderDTO paramOrderDTO = CreateOrderDTO
+                .builder()
+                .name("2021 - June - Odaban")
+                .description("First purchase of Odaban")
+                .quantity(100)
+                .carrier("USPS")
+                .productName("Odaban 30ml")
+                .shippingAddress("Calle Damian Rejas #3611")
+                .billingAddress("Calle Damian Rejas #3611")
+                .build();
 
         Order orderFromDB = new Order();
+        orderFromDB.setName("2021 - June - Odaban");
+        orderFromDB.setDescription("First purchase of Odaban");
+        orderFromDB.setQuantity(100);
+        orderFromDB.setTotal(350.99);
         orderFromDB.setCarrier("USPS");
-        orderFromDB.setTrackingNumber("RA411342925US");
+        orderFromDB.setProductName("Odaban 30ml");
+        orderFromDB.setShippingAddress("Calle Damian Rejas #3611");
+        orderFromDB.setBillingAddress("Calle Damian Rejas #3611");
+
         when(orderRepository.save(ArgumentMatchers.any(Order.class))).thenReturn(orderFromDB);
 
-        OrderDTO returnedDTO = orderService.createNewOrder(paramOrderDTO);
+        Order returnedOrder = orderService.createNewOrder(paramOrderDTO);
 
-        assertEquals(paramOrderDTO.getCarrier(), returnedDTO.getCarrier());
-        assertEquals(paramOrderDTO.getTrackingNumber(), returnedDTO.getTrackingNumber());
+        assertEquals(paramOrderDTO.getCarrier(), returnedOrder.getCarrier());
+//        assertEquals(paramOrderDTO.getTrackingNumber(), returnedOrder.getTrackingNumber());
     }
 
     @Test
